@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import twitterLogo from './assets/twitter-logo.svg';
 import './App.css';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
@@ -7,6 +7,7 @@ import {
 } from '@project-serum/anchor';
 import idl from './idl.json';
 import kp from './keypair.json';
+
 
 // SystemProgram is a reference to the Solana runtime!
 const { SystemProgram } = web3;
@@ -195,7 +196,7 @@ const App = () => {
     return () => window.removeEventListener('load', onLoad);
   }, []);
   
-  const getGifList = async() => {
+  const getGifList = useCallback( async () => {
     try {
       const provider = getProvider();
       const program = new Program(idl, programID, provider);
@@ -208,14 +209,14 @@ const App = () => {
       console.log("Error in getGifs: ", error)
       setGifList(null);
     }
-  }
+  }, [])
   
   useEffect(() => {
     if (walletAddress) {
       console.log('Fetching GIF list...');
       getGifList()
     }
-  }, [walletAddress]);
+  }, [walletAddress, getGifList]);
 
   return (
     <div className="App">
